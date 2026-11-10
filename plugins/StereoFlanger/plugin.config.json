@@ -1,0 +1,13 @@
+{
+  "id": "com.wyldtone.fx.stereo-jet-flanger",
+  "name": "Stereo Jet Flanger",
+  "manufacturer": "Wyldtone",
+  "version": "0.2.0",
+  "cpp": {
+    "sources": [
+      "plugin.cpp",
+      "../wyldtone_fx_common/FxShell.cpp"
+    ]
+  },
+  "category": "Modulation"
+}

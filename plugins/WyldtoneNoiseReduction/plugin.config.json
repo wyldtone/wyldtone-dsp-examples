@@ -1,0 +1,14 @@
+{
+  "id": "com.wyldtone.fx.noise-reduction",
+  "name": "Wyldtone Noise Reduction",
+  "manufacturer": "Wyldtone",
+  "version": "0.2.1",
+  "category": "Dynamics",
+  "icon": "icon.svg",
+  "cpp": {
+    "sources": [
+      "plugin.cpp",
+      "DenoiserBridge.cpp"
+    ]
+  }
+}

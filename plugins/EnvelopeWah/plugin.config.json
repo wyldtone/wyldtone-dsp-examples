@@ -1,0 +1,13 @@
+{
+  "id": "com.wyldtone.fx.expressive-envelope-wah",
+  "name": "Expressive Envelope Wah",
+  "manufacturer": "Wyldtone",
+  "version": "0.2.0",
+  "cpp": {
+    "sources": [
+      "plugin.cpp",
+      "../wyldtone_fx_common/FxShell.cpp"
+    ]
+  },
+  "category": "Modulation"
+}

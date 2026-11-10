@@ -1,0 +1,8 @@
+Wyldtone DSP Examples
+Copyright 2026 Wyldtone contributors
+
+This repository contains original audio DSP example code distributed under the
+Apache License, Version 2.0. See LICENSE.
+
+Third-party content and dependencies must retain their own applicable notices.
+The public Wyldtone Plugin SDK is a separate project and retains its own license.

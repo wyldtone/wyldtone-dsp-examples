@@ -1,0 +1,75 @@
+name: DSP examples - SDK build and validation
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-all:
+    name: Build and validate all 20 WAPs
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out DSP example sources
+        uses: actions/checkout@v4
+        with:
+          path: examples
+
+      - name: Check out public Wyldtone Plugin SDK
+        uses: actions/checkout@v4
+        with:
+          repository: wyldtone/wyldtone-plugin-sdk
+          ref: main
+          path: sdk
+
+      - name: Prepare Docker workspace and external plugin mount
+        shell: bash
+        run: |
+          mkdir -p JUCE-upstream sdk/.cache/cargo sdk/.cache/target
+          cat > sdk/compose.override.yaml <<'YAML'
+          services:
+            sdk:
+              volumes:
+                - ../examples/plugins:/workspace/projects
+          YAML
+          echo "HOST_UID=$(id -u)" >> "$GITHUB_ENV"
+          echo "HOST_GID=$(id -g)" >> "$GITHUB_ENV"
+
+      - name: Check category vocabulary and source layout
+        run: python3 examples/scripts/check_examples.py
+
+      - name: Build SDK container image
+        working-directory: sdk
+        run: docker compose build sdk
+
+      - name: Build and validate all WAP examples
+        working-directory: sdk
+        run: |
+          docker compose run --rm sdk shell -c '
+            set -euo pipefail
+            shopt -s nullglob
+            configs=(/workspace/projects/*/plugin.config.json)
+            test "${#configs[@]}" -eq 20
+            for config in "${configs[@]}"; do
+              echo "::group::Build ${config}"
+              cargo run --release --locked -p wyldtone-cli -- build "${config}"
+              dir="$(dirname "${config}")/build/wyldtone"
+              waps=("${dir}"/*.wap)
+              test "${#waps[@]}" -eq 1
+              cargo run --release --locked -p wyldtone-cli -- validate "${waps[0]}"
+              echo "::endgroup::"
+            done
+          '
+
+      - name: Upload validated Essentials WAP bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: wyldtone-essentials-wap
+          path: examples/plugins/*/build/wyldtone/*.wap
+          if-no-files-found: error
+          retention-days: 30

@@ -1,9 +1,50 @@
 # Wyldtone DSP Examples
 
-Open-source DSP example projects for the [Wyldtone Plugin SDK](https://github.com/wyldtone/wyldtone-plugin-sdk).
+A collection of real DSP effects built for the public [Wyldtone Plugin SDK](https://github.com/wyldtone/wyldtone-plugin-sdk). These are **standalone plugin projects**, not part of the proprietary Wyldtone Audio Engine. You can study, fork and build them using the SDK alone.
 
-This repository contains example source code for independently built Wyldtone Audio Plugins (WAPs). The commercial Wyldtone audio engine is not required to develop plugins.
+## Projects
 
-> Licensing review in progress: no open-source license is granted until a license is explicitly added. Do not redistribute these examples as commercially licensed code yet.
+| Category | Example projects |
+| --- | --- |
+| Drive | ModernDistortion, VintageFuzz, WarmDrive |
+| Dynamics | SmoothExpander, StudioCompressor, StudioGate, WyldtoneNoiseReduction |
+| EQ / Filter | StudioEQ |
+| Modulation | ClassicPhaser, EnvelopeWah, OpticalTremolo, StereoChorus, StereoFlanger |
+| Pitch | AnalogOctaver, PolyOctaver, PolyOctaverLive, PolyOctaverStudio |
+| Reverb | StudioReverb |
+| Delay | TapeDelay |
+| Utility | VolumeSwell |
 
-See the migration branch for the initial set of plugins and build instructions.
+All 20 example configurations declare an SDK-recognized category. The helper sources shared by several examples are in `plugins/wyldtone_fx_common/`; retain this directory layout when building.
+
+## Build
+
+Install Docker and clone both repositories next to one another:
+
+```bash
+git clone https://github.com/wyldtone/wyldtone-plugin-sdk.git
+git clone https://github.com/wyldtone/wyldtone-dsp-examples.git
+cd wyldtone-plugin-sdk
+```
+
+Create a local `compose.override.yaml` inside the SDK checkout:
+
+```yaml
+services:
+  sdk:
+    volumes:
+      - ../wyldtone-dsp-examples/plugins:/workspace/projects
+```
+
+Build and validate an effect, for example:
+
+```bash
+./wyldtone build projects/StudioEQ/plugin.config.json
+./wyldtone validate projects/StudioEQ/build/wyldtone/Studio-EQ.wap
+```
+
+All 20 examples are built and validated against the public SDK by GitHub Actions on pull requests. Build and validate affected plugins locally before submitting changes. See `CONTRIBUTING.md` to submit changes.
+
+## License
+
+The original Wyldtone DSP examples are provided under the [Apache License, Version 2.0](LICENSE). The license permits commercial derivatives subject to its conditions; consult the accompanying [NOTICE](NOTICE). Review third-party dependencies separately before distributing compiled binaries.

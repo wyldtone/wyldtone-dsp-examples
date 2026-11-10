@@ -1,0 +1,13 @@
+{
+  "id": "com.wyldtone.fx.classic-analog-octaver",
+  "name": "Classic Analog Octaver",
+  "manufacturer": "Wyldtone",
+  "version": "0.2.2",
+  "cpp": {
+    "sources": [
+      "plugin.cpp",
+      "../wyldtone_fx_common/FxShell.cpp"
+    ]
+  },
+  "category": "Pitch"
+}

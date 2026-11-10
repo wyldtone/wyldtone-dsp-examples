@@ -1,0 +1,14 @@
+{
+  "id": "com.wyldtone.fx.smooth-expander",
+  "name": "Smooth Downward Expander",
+  "manufacturer": "Wyldtone",
+  "version": "0.1.0",
+  "category": "Dynamics",
+  "icon": "icon.svg",
+  "cpp": {
+    "sources": [
+      "plugin.cpp",
+      "../wyldtone_fx_common/FxShell.cpp"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "id": "com.wyldtone.fx.polyphonic-octaver-studio-v2",
+  "name": "Poly Octaver Studio v0.2",
+  "manufacturer": "Wyldtone",
+  "version": "0.2.0",
+  "cpp": {
+    "sources": [
+      "plugin.cpp",
+      "../wyldtone_fx_common/FxShell.cpp"
+    ]
+  },
+  "category": "Pitch"
+}
