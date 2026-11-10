@@ -1,0 +1,13 @@
+{
+  "id": "com.wyldtone.fx.warm-drive",
+  "name": "Warm Analog Drive",
+  "manufacturer": "Wyldtone",
+  "version": "0.1.0",
+  "cpp": {
+    "sources": [
+      "plugin.cpp",
+      "../wyldtone_fx_common/FxShell.cpp"
+    ]
+  },
+  "category": "Drive"
+}

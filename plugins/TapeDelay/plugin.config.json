@@ -1,0 +1,13 @@
+{
+  "id": "com.wyldtone.fx.tape-delay",
+  "name": "Tape Delay",
+  "manufacturer": "Wyldtone",
+  "version": "0.1.0",
+  "cpp": {
+    "sources": [
+      "plugin.cpp",
+      "../wyldtone_fx_common/FxShell.cpp"
+    ]
+  },
+  "category": "Delay"
+}

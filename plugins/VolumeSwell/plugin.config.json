@@ -1,0 +1,13 @@
+{
+  "id": "com.wyldtone.fx.volume-auto-swell",
+  "name": "Volume Pedal / Auto Swell",
+  "manufacturer": "Wyldtone",
+  "version": "0.2.0",
+  "cpp": {
+    "sources": [
+      "plugin.cpp",
+      "../wyldtone_fx_common/FxShell.cpp"
+    ]
+  },
+  "category": "Utility"
+}
