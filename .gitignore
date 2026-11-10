@@ -1,0 +1,12 @@
+# Generated build output (never commit WAP binaries or local caches)
+**/build/
+*.wap
+*.wasm
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.dylib
+.cache/
+.DS_Store
