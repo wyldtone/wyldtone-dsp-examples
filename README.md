@@ -43,7 +43,7 @@ Build and validate an effect, for example:
 ./wyldtone validate projects/StudioEQ/build/wyldtone/Studio-EQ.wap
 ```
 
-The build and validation steps also run in CI for the migrated examples. See `CONTRIBUTING.md` to submit changes.
+Build and validate affected plugins locally before submitting changes. Automated build-and-validation CI is planned but not yet configured. See `CONTRIBUTING.md` to submit changes.
 
 ## Licensing and scope
 
