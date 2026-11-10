@@ -48,5 +48,3 @@ The build and validation steps also run in CI for the migrated examples. See `CO
 ## Licensing and scope
 
 **License review is pending.** This migration branch intentionally contains no license grant yet. Public visibility of source code does not by itself permit copying or commercial redistribution. Before the code is released for third-party reuse, the maintainer must audit ownership, embedded algorithms and dependencies and add the selected license. The intent is a permissive license suitable for commercial derivatives.
-
-Third-party JUCE proof-of-concepts, `KFuzz`, `StaticClipper`, `juce_gain`, `juce_noisegate`, and `test_distortion` are **not** included.
