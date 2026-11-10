@@ -1,6 +1,6 @@
 # Contributing
 
-DSP fixes and new examples are welcome once the source license has been finalized.
+DSP fixes and new examples are welcome under the repository's [Apache License 2.0](LICENSE).
 
 - Keep each effect self-contained in `plugins/<Name>/`, with its own `plugin.config.json`.
 - Use the [public SDK](https://github.com/wyldtone/wyldtone-plugin-sdk); do not depend on private Audio Engine sources.
@@ -10,4 +10,4 @@ DSP fixes and new examples are welcome once the source license has been finalize
 - Do not include third-party models, captures, binaries, samples or copyrighted source without redistribution permission.
 - Run `./wyldtone build` and `./wyldtone validate` against each affected WAP.
 
-Commercial reuse will depend on the finalized repository license. Until that license is published, **do not assume a grant of rights from public availability**.
+Commercial derivatives are permitted under Apache 2.0, subject to attribution and other license conditions. Third-party sources and assets may have different licensing requirements.
