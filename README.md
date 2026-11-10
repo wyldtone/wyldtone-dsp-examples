@@ -43,8 +43,8 @@ Build and validate an effect, for example:
 ./wyldtone validate projects/StudioEQ/build/wyldtone/Studio-EQ.wap
 ```
 
-Build and validate affected plugins locally before submitting changes. Automated build-and-validation CI is planned but not yet configured. See `CONTRIBUTING.md` to submit changes.
+All 20 examples are built and validated against the public SDK by GitHub Actions on pull requests. Build and validate affected plugins locally before submitting changes. See `CONTRIBUTING.md` to submit changes.
 
-## Licensing and scope
+## License
 
-**License review is pending.** This migration branch intentionally contains no license grant yet. Public visibility of source code does not by itself permit copying or commercial redistribution. Before the code is released for third-party reuse, the maintainer must audit ownership, embedded algorithms and dependencies and add the selected license. The intent is a permissive license suitable for commercial derivatives.
+The original Wyldtone DSP examples are provided under the [Apache License, Version 2.0](LICENSE). The license permits commercial derivatives subject to its conditions; consult the accompanying [NOTICE](NOTICE). Review third-party dependencies separately before distributing compiled binaries.
