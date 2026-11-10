@@ -65,3 +65,11 @@ jobs:
               echo "::endgroup::"
             done
           '
+
+      - name: Upload validated Essentials WAP bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: wyldtone-essentials-wap
+          path: examples/plugins/*/build/wyldtone/*.wap
+          if-no-files-found: error
+          retention-days: 30
