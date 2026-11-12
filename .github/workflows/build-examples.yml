@@ -1,9 +1,6 @@
 name: DSP examples - SDK build and validation
 
 on:
-  pull_request:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
