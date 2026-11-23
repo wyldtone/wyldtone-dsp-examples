@@ -30,3 +30,22 @@ qualify for plugin delay compensation.
 Old WAP binaries do not gain these exports automatically: rebuild the
 affected plugins against the updated SDK. Old hosts ignore optional exports,
 while the updated Engine uses them to align parallel paths.
+
+## Updated WAP versions
+
+Patch versions were incremented to ensure clients and the Wyldtone Cloud
+can distinguish rebuilt, latency-aware WAPs from earlier packages:
+
+| Plugin | Previous | New |
+|---|---|---|
+| Modern Distortion | 0.1.0 | 0.1.1 |
+| Vintage Fuzz | 0.1.0 | 0.1.1 |
+| Warm Drive | 0.1.0 | 0.1.1 |
+| Noise Reduction | 0.2.1 | 0.2.2 |
+| Poly Octaver | 0.1.0 | 0.1.1 |
+| Poly Octaver Live | 0.2.0 | 0.2.1 |
+| Poly Octaver Studio | 0.2.0 | 0.2.1 |
+
+Plugin IDs and parameter IDs are unchanged. Existing preset references will
+continue to use the same plugin identity, while version-pinned presets must
+follow the existing Wyldtone upgrade/compatibility rules.
