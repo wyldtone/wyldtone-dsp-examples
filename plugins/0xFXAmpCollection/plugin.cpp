@@ -141,7 +141,7 @@ void plugin_init(int32_t rate, int32_t channels, int32_t /*blockFrames*/) {
     pending.store(0, std::memory_order_relaxed);
 }
 int32_t plugin_name(int32_t dest, int32_t size) {
-    return copyText("0xFX Amp Collection", dest, size);
+    return copyText("Amp Collection", dest, size);
 }
 int32_t plugin_buffer_ptr() {
     return static_cast<int32_t>(reinterpret_cast<uintptr_t>(audio));
