@@ -46,14 +46,14 @@ int main() {
         double signal = 0.0, error = 0.0;
         // Fractional delay at 4x needs separate interpolation; this tolerance
         // only catches broken resampler operation, not audio transparency.
-        const int lag = factor == 2 ? 31 : 47;
+        const int lag = factor == 2 ? 31 : 46;
         for (int i = 1500; i < n; ++i) {
             const double diff = input[i - lag] - whole[i];
             error += diff * diff;
             signal += input[i - lag] * input[i - lag];
         }
         const double relativeError = std::sqrt(error / signal);
-        assert(relativeError < (factor == 2 ? 0.001 : 0.08));
+        assert(relativeError < (factor == 2 ? 0.001 : 0.003));
         std::printf("%dx streaming FIR test passed (RMS error %.6g)\\n",
                     factor, relativeError);
     }
