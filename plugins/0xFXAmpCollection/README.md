@@ -62,11 +62,11 @@ The default is 1x for backward compatibility. 2x and 4x cost extra CPU, and
 not every model benefits equally.
 
 **Important latency limitation:** 2x introduces 31 input-rate samples and
-4x introduces 46.5 samples of linear-phase group delay. The current WAP host
-ABI does not provide dynamic latency compensation for this plugin. Parallel
+4x introduces 46 samples of linear-phase group delay. Older WAP hosts without the new optional latency ABI cannot compensate this plugin. Parallel
 dry/wet or split/mix processing may produce comb filtering when oversampling
-is enabled. Leave oversampling Off for phase-critical parallel routing until
-host latency reporting/compensation is implemented. Switching quality uses
+is enabled. New SDK/Host latency exports allow automatic parallel-path compensation.
+Until those SDK/Audio Engine changes are merged and deployed, leave
+oversampling Off for phase-critical parallel routing. Switching quality uses
 a short crossfade but can still change path alignment.
 
 The vendor 3rd-order TMB tone-stack filter now uses double-precision
