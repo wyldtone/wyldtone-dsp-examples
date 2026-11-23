@@ -17,7 +17,7 @@ A collection of real DSP effects built for the public [Wyldtone Plugin SDK](http
 
 All 21 example configurations declare an SDK-recognized category.
 
-The new [0xFX Amp Collection](plugins/0xFXAmpCollection/README.md) includes
+The new [Amp Collection](plugins/0xFXAmpCollection/README.md) (powered by 0xFX DSP) includes
 all 12 MIT-licensed classic algorithmic 0xFX amp models in one Choice-driven
 WAP with an Apache-2.0 Wyldtone adapter and **both full license notices
 included inside the WAP package**. The 20 original Wyldtone effects remain
