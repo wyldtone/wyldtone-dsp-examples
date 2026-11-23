@@ -362,21 +362,21 @@ static const amp_model_config_t amp_configs[FX_AMP_COUNT] = {
  */
 static void tmb_compute_coefficients(fx_tone_stack_3rd_t *ts,
                                      const tmb_components_t *comp,
-                                     float t, float m, float b,
-                                     float sr)
+                                     double t, double m, double b,
+                                     double sr)
 {
     /* Extract component values.
      * Treble pot: CW (t=1) should give low R1 (more treble passes).
      * Mid pot: CW (m=1) should give high R3 (less mid scoop).
      * Bass pot: CW (b=1) gives high R2 (less bass shunted to ground). */
-    float R1 = comp->R1 * (1.0f - t) + 1.0f;   /* treble pot: low R = more treble */
-    float R1i = comp->R1 * t;                    /* treble pot inverse wiper */
-    float R2 = comp->R2 * b + 1.0f;             /* bass pot (correct direction) */
-    float R3 = comp->R3 * (1.0f - m) + 1.0f;   /* mid pot: low R = more mid scoop */
-    float R4 = comp->R4;
-    float C1 = comp->C1;
-    float C2 = comp->C2;
-    float C3 = comp->C3;
+    double R1 = comp->R1 * (1.0f - t) + 1.0f;   /* treble pot: low R = more treble */
+    double R1i = comp->R1 * t;                    /* treble pot inverse wiper */
+    double R2 = comp->R2 * b + 1.0f;             /* bass pot (correct direction) */
+    double R3 = comp->R3 * (1.0f - m) + 1.0f;   /* mid pot: low R = more mid scoop */
+    double R4 = comp->R4;
+    double C1 = comp->C1;
+    double C2 = comp->C2;
+    double C3 = comp->C3;
 
     /*
      * s-domain coefficients from the Yeh/Abel/Smith analysis.
@@ -390,24 +390,24 @@ static void tmb_compute_coefficients(fx_tone_stack_3rd_t *ts,
      */
 
     /* Numerator coefficients (s-domain) */
-    float sb1 = C1 * C3 * R1 * R3
+    double sb1 = C1 * C3 * R1 * R3
               + C1 * C3 * R3 * R4
               + C2 * C3 * R2 * R4;
 
-    float sb2 = C1 * R1
+    double sb2 = C1 * R1
               + C1 * R3
               + C2 * R2
               + C3 * R3
               + C3 * R4;
 
-    float sb3 = 1.0f;
+    double sb3 = 1.0f;
 
     /* Denominator coefficients (s-domain) */
-    float sa0 = C1 * C2 * C3 * R1 * R2 * R4
+    double sa0 = C1 * C2 * C3 * R1 * R2 * R4
               + C1 * C2 * C3 * R1 * R2 * R3
               + C1 * C2 * C3 * R2 * R3 * R4;
 
-    float sa1 = C1 * C2 * R1 * R2
+    double sa1 = C1 * C2 * R1 * R2
               + C1 * C2 * R2 * R4
               + C1 * C3 * R1 * R3
               + C1 * C3 * R1 * R4
@@ -417,7 +417,7 @@ static void tmb_compute_coefficients(fx_tone_stack_3rd_t *ts,
               + C2 * C3 * R3 * R4
               + C1 * C2 * R1i * R2;
 
-    float sa2 = C1 * R1
+    double sa2 = C1 * R1
               + C1 * R3
               + C2 * R2
               + C3 * R3
@@ -437,23 +437,23 @@ static void tmb_compute_coefficients(fx_tone_stack_3rd_t *ts,
      *
      * Multiply out to get z-domain coefficients.
      */
-    float c = 2.0f * sr;
-    float c2 = c * c;
-    float c3 = c2 * c;
+    double c = 2.0f * sr;
+    double c2 = c * c;
+    double c3 = c2 * c;
 
     /* Denominator: a0*c^3 + a1*c^2 + a2*c + 1 (for normalization) */
-    float A0 = sa0 * c3 + sa1 * c2 + sa2 * c + 1.0f;
+    double A0 = sa0 * c3 + sa1 * c2 + sa2 * c + 1.0f;
 
     /* Guard against division by zero (shouldn't happen with valid components) */
-    if (fabsf(A0) < 1e-30f) A0 = 1e-30f;
+    if (fabs(A0) < 1e-30f) A0 = 1e-30f;
 
-    float inv_A0 = 1.0f / A0;
+    double inv_A0 = 1.0f / A0;
 
     /* z-domain numerator coefficients (after bilinear substitution and expansion) */
     /* B(z) = B0 + B1*z^-1 + B2*z^-2 + B3*z^-3 */
-    float B0 = (sb1 * c2 + sb2 * c + sb3);
-    float B1 = (-2.0f * sb1 * c2 + 2.0f * sb3);
-    float B2 = (sb1 * c2 - sb2 * c + sb3);
+    double B0 = (sb1 * c2 + sb2 * c + sb3);
+    double B1 = (-2.0f * sb1 * c2 + 2.0f * sb3);
+    double B2 = (sb1 * c2 - sb2 * c + sb3);
     /* Note: numerator is 2nd order in s, so z-domain is 3rd order with B3=0
      * after proper bilinear expansion. However, the bilinear transform of
      * a ratio needs matching orders. We pad with (1+z^-1) to make 3rd order. */
@@ -473,10 +473,10 @@ static void tmb_compute_coefficients(fx_tone_stack_3rd_t *ts,
      */
 
     /* Recalculate properly with full polynomial expansion */
-    float num0 =  sb1*c2 + sb2*c + sb3;
-    float num1 = -sb1*c2 + sb2*c + 3.0f*sb3;   /* from (1-z)(1+z) and (1+z)^3 expansion */
-    float num2 = -sb1*c2 - sb2*c + 3.0f*sb3;
-    float num3 =  sb1*c2 - sb2*c + sb3;
+    double num0 =  sb1*c2 + sb2*c + sb3;
+    double num1 = -sb1*c2 + sb2*c + 3.0f*sb3;   /* from (1-z)(1+z) and (1+z)^3 expansion */
+    double num2 = -sb1*c2 - sb2*c + 3.0f*sb3;
+    double num3 =  sb1*c2 - sb2*c + sb3;
 
     /* Wait — let me be more careful. Using the expansion patterns above:
      * b1*c^2 * [1, -1, -1, +1]  (coefficient of (1-z^-1)^2*(1+z^-1))
@@ -494,13 +494,13 @@ static void tmb_compute_coefficients(fx_tone_stack_3rd_t *ts,
      * a2*c   * [1, +1, -1, -1]  (coefficient of (1-z^-1)*(1+z^-1)^2)
      * 1      * [1, +3, +3, +1]  (coefficient of (1+z^-1)^3)
      */
-    float den0 = sa0*c3 * 1.0f + sa1*c2 * 1.0f + sa2*c * 1.0f + 1.0f;
-    float den1 = sa0*c3 *(-3.0f) + sa1*c2 *(-1.0f) + sa2*c * 1.0f + 3.0f;
-    float den2 = sa0*c3 * 3.0f + sa1*c2 *(-1.0f) + sa2*c *(-1.0f) + 3.0f;
-    float den3 = sa0*c3 *(-1.0f) + sa1*c2 * 1.0f + sa2*c *(-1.0f) + 1.0f;
+    double den0 = sa0*c3 * 1.0f + sa1*c2 * 1.0f + sa2*c * 1.0f + 1.0f;
+    double den1 = sa0*c3 *(-3.0f) + sa1*c2 *(-1.0f) + sa2*c * 1.0f + 3.0f;
+    double den2 = sa0*c3 * 3.0f + sa1*c2 *(-1.0f) + sa2*c *(-1.0f) + 3.0f;
+    double den3 = sa0*c3 *(-1.0f) + sa1*c2 * 1.0f + sa2*c *(-1.0f) + 1.0f;
 
     /* Normalize by den0 (= A0, already computed) */
-    float inv_den0 = 1.0f / den0;
+    double inv_den0 = 1.0f / den0;
 
     ts->b0 = num0 * inv_den0;
     ts->b1 = num1 * inv_den0;
@@ -514,7 +514,7 @@ static void tmb_compute_coefficients(fx_tone_stack_3rd_t *ts,
 /* Process one sample through the 3rd-order tone stack filter.
  * Uses transposed direct form II for numerical stability. */
 static inline float tone_stack_3rd_process(fx_tone_stack_3rd_t *ts, float in) {
-    float out = ts->b0 * in + ts->z1;
+    double out = ts->b0 * (double)in + ts->z1;
     ts->z1 = ts->b1 * in - ts->a1 * out + ts->z2;
     ts->z2 = ts->b2 * in - ts->a2 * out + ts->z3;
     ts->z3 = ts->b3 * in - ts->a3 * out;
@@ -524,17 +524,17 @@ static inline float tone_stack_3rd_process(fx_tone_stack_3rd_t *ts, float in) {
     if (ts->z1 > 100.0f || ts->z1 < -100.0f ||
         ts->z2 > 100.0f || ts->z2 < -100.0f ||
         ts->z3 > 100.0f || ts->z3 < -100.0f ||
-        out != out) {  /* NaN check */
+        !isfinite(out)) {  /* non-finite guard */
         ts->z1 = ts->z2 = ts->z3 = 0.0f;
         return 0.0f;
     }
 
     /* Flush denormals */
-    if (ts->z1 > -1e-15f && ts->z1 < 1e-15f) ts->z1 = 0.0f;
-    if (ts->z2 > -1e-15f && ts->z2 < 1e-15f) ts->z2 = 0.0f;
-    if (ts->z3 > -1e-15f && ts->z3 < 1e-15f) ts->z3 = 0.0f;
+    if (ts->z1 > -1e-22 && ts->z1 < 1e-22) ts->z1 = 0.0f;
+    if (ts->z2 > -1e-22 && ts->z2 < 1e-22) ts->z2 = 0.0f;
+    if (ts->z3 > -1e-22 && ts->z3 < 1e-22) ts->z3 = 0.0f;
 
-    return out;
+    return (float)out;
 }
 
 /* ── Vox Cut Control — 1st order lowpass ─────────────────────── */
