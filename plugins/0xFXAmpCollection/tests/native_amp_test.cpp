@@ -88,6 +88,6 @@ int main() {
     assert(std::abs(noSag - fullSag) > noSag * 0.001 &&
            "Sag must measurably change a sustained, non-clipped signal");
 
-    std::puts("0xFX Amp Collection: native all-model smoke test passed");
+    std::puts("Amp Collection: native all-model smoke test passed");
     return 0;
 }
