@@ -793,22 +793,19 @@ void fx_amp_process(fx_amp_state_t *amp, float *buf, int n, float sr) {
             x *= reduction;
         }
 
-        /* Sag simulation: supply voltage droops under sustained loud signal */
-        if (sag_amount > 0.01f) {
-            float load = amp->power_envelope;
-            if (load > amp->sag_voltage)
-                amp->sag_voltage = sag_attack * amp->sag_voltage +
-                                   (1.0f - sag_attack) * (1.0f - load * sag_amount);
-            else
-                amp->sag_voltage = sag_release * amp->sag_voltage +
-                                   (1.0f - sag_release) * 1.0f;
-
-            /* Clamp sag voltage to reasonable range */
-            if (amp->sag_voltage < 0.3f) amp->sag_voltage = 0.3f;
-            if (amp->sag_voltage > 1.0f) amp->sag_voltage = 1.0f;
-
-            x *= amp->sag_voltage;
-        }
+        /* Wyldtone MIT-derived fix: compare target supply voltage against
+         * current supply voltage, NOT envelope load against supply voltage.
+         * The upstream comparison often prevents sag from engaging at all.
+         * 10ms droop and 200ms recovery approximate tube-amp supply sag.
+         * With Sag at zero the supply smoothly returns to unity. */
+        float load = amp->power_envelope;
+        float target_voltage = 1.0f - fminf(load, 1.5f) * sag_amount * 0.5f;
+        if (target_voltage < 0.3f) target_voltage = 0.3f;
+        if (target_voltage > 1.0f) target_voltage = 1.0f;
+        float sag_coeff = target_voltage < amp->sag_voltage ? sag_attack : sag_release;
+        amp->sag_voltage = sag_coeff * amp->sag_voltage +
+                           (1.0f - sag_coeff) * target_voltage;
+        x *= amp->sag_voltage;
 
         /* Master volume + output volume.
          * Makeup gain compensates for waveshaper compression.
