@@ -11,6 +11,8 @@ void plugin_init(int32_t rate, int32_t channels, int32_t frames);
 int32_t plugin_name(int32_t buffer, int32_t capacity);
 int32_t plugin_buffer_ptr();
 void plugin_process(int32_t buffer, int32_t sample_count);
+int32_t plugin_latency_samples();
+int32_t plugin_max_latency_samples();
 int32_t plugin_parameter_count();
 int32_t plugin_parameter_flags(int32_t index);
 float plugin_parameter_get(int32_t index);
@@ -26,6 +28,8 @@ int main() {
     constexpr float pi = 3.14159265358979323846f;
     plugin_init(48000, channels, frames);
     assert(plugin_parameter_count() == 13);
+    assert(plugin_max_latency_samples() == 46);
+    assert(plugin_latency_samples() == 0);
     assert(plugin_parameter_flags(12) == (1 | 8)); // Oversampling choice
     assert(plugin_parameter_get(12) == 0.0f); // Old presets remain 1x
     assert(plugin_parameter_flags(0) == (1 | 8)); // Choice/Automatable
@@ -99,6 +103,7 @@ int main() {
                 plugin_parameter_set(0, float(model) / 11.0f);
                 plugin_parameter_set(1, 1.0f);
                 plugin_parameter_set(12, float(os) / 2.0f);
+                assert(plugin_latency_samples() == (os == 0 ? 0 : os == 1 ? 31 : 46));
                 double mean = 0.0;
                 double energy = 0.0;
                 constexpr int blocks = 170;
