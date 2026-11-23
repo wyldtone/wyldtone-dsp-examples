@@ -15,7 +15,13 @@ A collection of real DSP effects built for the public [Wyldtone Plugin SDK](http
 | Delay | TapeDelay |
 | Utility | VolumeSwell |
 
-All 20 example configurations declare an SDK-recognized category. The helper sources shared by several examples are in `plugins/wyldtone_fx_common/`; retain this directory layout when building.
+All 21 example configurations declare an SDK-recognized category.
+
+The new [Amp Collection](plugins/0xFXAmpCollection/README.md) (powered by 0xFX DSP) includes
+all 12 MIT-licensed classic algorithmic 0xFX amp models in one Choice-driven
+WAP with an Apache-2.0 Wyldtone adapter and **both full license notices
+included inside the WAP package**. The 20 original Wyldtone effects remain
+available alongside it. The helper sources shared by several examples are in `plugins/wyldtone_fx_common/`; retain this directory layout when building.
 
 ## Build
 
@@ -43,7 +49,7 @@ Build and validate an effect, for example:
 ./wyldtone validate projects/StudioEQ/build/wyldtone/Studio-EQ.wap
 ```
 
-All 20 examples are built and validated against the public SDK by GitHub Actions on pull requests. Build and validate affected plugins locally before submitting changes. See `CONTRIBUTING.md` to submit changes.
+All 21 examples are built and validated against the public SDK by GitHub Actions on pull requests. Build and validate affected plugins locally before submitting changes. See `CONTRIBUTING.md` to submit changes.
 
 ## License
 
