@@ -1,0 +1,38 @@
+{
+  "id": "com.wyldtone.0xfx.amp-collection",
+  "name": "0xFX Amp Collection",
+  "manufacturer": "Wyldtone",
+  "version": "0.1.0",
+  "category": "Amp",
+  "description": "12 classic algorithmic amp models based on the MIT-licensed 0xFX DSP by Dan Michael; no cabinet IR included.",
+  "license": {
+    "expression": "Apache-2.0 AND MIT",
+    "notices": [
+      {
+        "component": "0xFX amp DSP (Dan Michael)",
+        "spdx": "MIT",
+        "path": "licenses/0xFX-MIT.txt"
+      },
+      {
+        "component": "Wyldtone WAP adapter",
+        "spdx": "Apache-2.0",
+        "path": "licenses/Wyldtone-Apache-2.0.txt"
+      }
+    ]
+  },
+  "cpp": {
+    "sources": [
+      "plugin.cpp",
+      "vendor/0xfx/amp.c",
+      "vendor/0xfx/biquad.c"
+    ]
+  },
+  "audio": {
+    "inputs": [
+      2
+    ],
+    "outputs": [
+      2
+    ]
+  }
+}
