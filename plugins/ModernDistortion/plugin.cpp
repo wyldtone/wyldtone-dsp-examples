@@ -29,3 +29,16 @@ extern "C" void wyldfx_process(const float* in,float* out,int32_t frames,int32_t
         out[j]=finite_sample(crossfade(dryDelay[c].read(16),y,mix));
     }
 }
+
+// These three oversampled distortion effects already align the dry signal
+// using a 16-sample ring. Report the resulting fixed signal delay to the
+// host so parallel Split/Mix paths can be compensated.
+#ifdef __EMSCRIPTEN__
+#include "wasm_plugin.h"
+#define WYLDFX_LATENCY_EXPORT WASM_PLUGIN_EXPORT
+#else
+#define WYLDFX_LATENCY_EXPORT
+#endif
+extern "C" WYLDFX_LATENCY_EXPORT int32_t plugin_latency_samples(void) { return 16; }
+extern "C" WYLDFX_LATENCY_EXPORT int32_t plugin_max_latency_samples(void) { return 16; }
+
