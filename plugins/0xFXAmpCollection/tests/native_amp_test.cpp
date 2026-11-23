@@ -25,7 +25,9 @@ int main() {
     constexpr int channels = 2;
     constexpr float pi = 3.14159265358979323846f;
     plugin_init(48000, channels, frames);
-    assert(plugin_parameter_count() == 12);
+    assert(plugin_parameter_count() == 13);
+    assert(plugin_parameter_flags(12) == (1 | 8)); // Oversampling choice
+    assert(plugin_parameter_get(12) == 0.0f); // Old presets remain 1x
     assert(plugin_parameter_flags(0) == (1 | 8)); // Choice/Automatable
     assert(plugin_parameter_flags(1) == 1); // Gain/Automatable
     float* samples = wyldtone_amp_native_audio_buffer();
@@ -88,6 +90,49 @@ int main() {
     assert(std::abs(noSag - fullSag) > noSag * 0.001 &&
            "Sag must measurably change a sustained, non-clipped signal");
 
+    // Stress-test the historically problematic rates and models using the
+    // native DSP path and the actual WAP adapter at every oversampling mode.
+    for (int rate : {44100, 48000, 88200, 96000, 176400, 192000}) {
+        for (int model = 0; model < 12; ++model) {
+            for (int os = 0; os < 3; ++os) {
+                plugin_init(rate, channels, frames);
+                plugin_parameter_set(0, float(model) / 11.0f);
+                plugin_parameter_set(1, 1.0f);
+                plugin_parameter_set(12, float(os) / 2.0f);
+                double mean = 0.0;
+                double energy = 0.0;
+                constexpr int blocks = 170;
+                for (int pass = 0; pass < blocks; ++pass) {
+                    for (int f = 0; f < frames; ++f) {
+                        double position = double(f + pass * frames);
+                        float tone = float(0.2 * std::sin(2.0 * pi * 2053.0 *
+                                                        position / rate));
+                        samples[f * 2] = tone;
+                        samples[f * 2 + 1] = tone * 0.37f;
+                    }
+                    plugin_process(plugin_buffer_ptr(), frames * channels);
+                    if (pass >= 100) {
+                        for (int f = 0; f < frames; ++f) {
+                            const double v = samples[f * 2];
+                            assert(std::isfinite(v));
+                            assert(std::abs(v) <= 8.0);
+                            mean += v;
+                            energy += v * v;
+                        }
+                    }
+                }
+                const double count = double(blocks - 100) * frames;
+                mean /= count;
+                const double rms = std::sqrt(energy / count);
+                if (!(rms > 1e-5 && std::abs(mean) < 0.25)) {
+                    std::fprintf(stderr,
+                        "Samplerate stability failure: rate=%d model=%d os=%d rms=%g dc=%g\\n",
+                        rate, model, os, rms, mean);
+                    return 1;
+                }
+            }
+        }
+    }
     std::puts("Amp Collection: native all-model smoke test passed");
     return 0;
 }
