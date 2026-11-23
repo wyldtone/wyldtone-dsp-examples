@@ -201,4 +201,8 @@ void plugin_parameter_set(int32_t index, float normalized) {
 int32_t plugin_pending_events() {
     return pending.exchange(0, std::memory_order_acquire);
 }
+#ifdef WYLDTONE_NATIVE_TEST
+// Exposed only for host-native regression tests; not compiled into the WAP.
+float* wyldtone_amp_native_audio_buffer() { return audio; }
+#endif
 } // extern "C"
