@@ -245,3 +245,20 @@ extern "C" void wyldfx_process(const float* in,float* out,int32_t frames,int32_t
         if(++dryPos==FFT_SIZE)dryPos=0;
     }
 }
+
+// When Dry alignment is enabled, both the dry and wet FFT paths have
+// FFT_SIZE samples of nominal delay. With alignment off the plugin mixes
+// zero-latency dry audio with delayed wet audio, so there is NO single
+// meaningful latency to report; keep the legacy 0-frame declaration.
+#ifdef __EMSCRIPTEN__
+#include "wasm_plugin.h"
+#define WYLDFX_POLY_EXPORT WASM_PLUGIN_EXPORT
+#else
+#define WYLDFX_POLY_EXPORT
+#endif
+extern "C" WYLDFX_POLY_EXPORT int32_t plugin_latency_samples() {
+    return wyldfx_parameter(4) >= 0.5f ? FFT_SIZE : 0;
+}
+extern "C" WYLDFX_POLY_EXPORT int32_t plugin_max_latency_samples() {
+    return FFT_SIZE;
+}

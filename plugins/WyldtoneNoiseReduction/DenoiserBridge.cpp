@@ -91,6 +91,9 @@ void plugin_process(int32_t ptr, int32_t sample_count) {
         channels<1 || sample_count%channels!=0) return;
     wyldfx_process(buffer, buffer, sample_count/channels, channels);
 }
+// 512-point STFT produces 511 input-frame samples of algorithmic latency.
+OPTIONAL_EXPORT int32_t plugin_latency_samples(void) { return 511; }
+OPTIONAL_EXPORT int32_t plugin_max_latency_samples(void) { return 511; }
 OPTIONAL_EXPORT int32_t plugin_input_bus_count() { return 1; }
 OPTIONAL_EXPORT int32_t plugin_output_bus_count() { return 1; }
 OPTIONAL_EXPORT int32_t plugin_input_bus_channels(int32_t bus) { return bus==0?2:0; }

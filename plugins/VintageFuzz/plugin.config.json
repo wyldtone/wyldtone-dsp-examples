@@ -2,7 +2,7 @@
   "id": "com.wyldtone.fx.vintage-fuzz",
   "name": "Vintage Dynamic Fuzz",
   "manufacturer": "Wyldtone",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "cpp": {
     "sources": [
       "plugin.cpp",
