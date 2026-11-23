@@ -1,0 +1,26 @@
+name: Amp Collection - native DSP regression
+
+on:
+  pull_request:
+    paths:
+      - "plugins/0xFXAmpCollection/**"
+      - ".github/workflows/amp-collection-regression.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-amp:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile and test C99 DSP and C++ WAP adapter
+        run: sh plugins/0xFXAmpCollection/tests/run-native.sh
+      - name: Compile and test resampler
+        run: |
+          c++ -std=c++17 -O2 -Wall -Wextra -Werror \
+            plugins/0xFXAmpCollection/tests/oversampling_unit.cpp \
+            -o /tmp/wyldtone-oversampling-test
+          /tmp/wyldtone-oversampling-test
