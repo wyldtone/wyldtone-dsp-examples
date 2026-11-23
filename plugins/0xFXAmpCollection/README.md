@@ -33,7 +33,10 @@ WAP stereo bus ABI. Audio-thread processing performs no allocations.
 `Amp Model` is a real WAP `Choice` with the upstream's original names.
 The other fixed host-visible normalized parameters are `Gain`, `Volume`,
 `Bass`, `Mid`, `Treble`, `Presence`, `Sag`, `Master`, `Cut`,
-`Tone`, and `Feedback`.
+`Tone`, `Feedback` and the appended **Oversampling** Choice (Off / 2x / 4x).
+The 12 existing parameter indices and the stable plugin ID do not change.
+Old presets default to **Off (1x)**, so they keep their previous tone and timing.
+
 
 **Model-specific parameters:** Cut affects Essex Chime, Tone affects Citrus
 Terror and Feedback affects Eclipse Drone. These are exposed on all models
@@ -52,8 +55,26 @@ before the C++ link. The first user build succeeded but logged 31
 `-Wreorder-init-list` warnings because the C source was still treated as
 C++; rebuild with the latest SDK PR #13 code.
 
-The core does not implement high-order oversampling. High-gain settings
-may alias; benchmark and listen critically before production release.
+The Wyldtone adapter provides streaming FIR anti-aliasing with Off (1x),
+2x and 4x modes. Its two-stage 63-tap linear-phase half-band filters bracket
+the complete nonlinear amp DSP (including preamp, tone stack and power amp).
+The default is 1x for backward compatibility. 2x and 4x cost extra CPU, and
+not every model benefits equally.
+
+**Important latency limitation:** 2x introduces 31 input-rate samples and
+4x introduces 46.5 samples of linear-phase group delay. The current WAP host
+ABI does not provide dynamic latency compensation for this plugin. Parallel
+dry/wet or split/mix processing may produce comb filtering when oversampling
+is enabled. Leave oversampling Off for phase-critical parallel routing until
+host latency reporting/compensation is implemented. Switching quality uses
+a short crossfade but can still change path alignment.
+
+The vendor 3rd-order TMB tone-stack filter now uses double-precision
+coefficients and states: at high processing rates, single precision could
+shift slow filter poles outside the unit circle, resulting in audible
+low-frequency drift and DC offsets. All six sample rates 44.1/48/88.2/96/
+176.4/192 kHz and all three quality levels are covered by native regression
+tests; WASM/host listening and real-time performance testing are still needed.
 Cabinet IR loading, mic simulation and post-amp effects are intentionally
 not included: chain Wyldtone's existing **IR Loader** after the Amp.
 
@@ -86,7 +107,7 @@ The generated WAP must contain `plugin.wasm`, `manifest.json`,
 with system unzip: `unzip -l <file.wap>`.
 
 **Audio acceptance tests:** run clean and distorted bass/guitar signals at
-44.1/48/96 kHz, test mono/true stereo isolation, change models while audio
+44.1/48/96/176.4/192 kHz, test mono/true stereo isolation, change models while audio
 plays (no clicks or NaN/Inf), confirm all twelve Choice labels and parameter
 save/restore, verify model CPU cost, and compare against standalone 0xFX
 using cabinet bypass. These live listening/CPU tests remain necessary even
