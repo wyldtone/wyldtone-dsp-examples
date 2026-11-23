@@ -1,0 +1,66 @@
+name: Amp Collection - WAP integration
+
+on:
+  push:
+    branches: [feat/0xfx-amp-collection]
+    paths:
+      - plugins/0xFXAmpCollection/**
+      - .github/workflows/amp-wap-integration.yml
+  pull_request:
+    paths:
+      - plugins/0xFXAmpCollection/**
+      - .github/workflows/amp-wap-integration.yml
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: examples
+      - uses: actions/checkout@v4
+        with:
+          repository: wyldtone/wyldtone-plugin-sdk
+          ref: feat/wap-license-metadata-notices
+          path: sdk
+      - name: Mount project and prepare SDK
+        shell: bash
+        run: |
+          mkdir -p JUCE-upstream sdk/.cache/cargo sdk/.cache/target
+          cat > sdk/compose.override.yaml <<'YAML'
+          services:
+            sdk:
+              volumes:
+                - ../examples/plugins:/workspace/projects
+          YAML
+          echo "HOST_UID=$(id -u)" >> "$GITHUB_ENV"
+          echo "HOST_GID=$(id -g)" >> "$GITHUB_ENV"
+      - name: Build SDK toolchain
+        working-directory: sdk
+        run: docker compose build sdk
+      - name: Build and validate the actual Amp WAP
+        working-directory: sdk
+        run: |
+          docker compose run --rm sdk shell -c '
+            set -eu
+            cargo run --release --locked -p wyldtone-cli -- build /workspace/projects/0xFXAmpCollection/plugin.config.json
+            cargo run --release --locked -p wyldtone-cli -- validate /workspace/projects/0xFXAmpCollection/build/wyldtone/Amp-Collection.wap
+          '
+      - name: Confirm license notices survived packaging
+        shell: bash
+        run: |
+          WAP=examples/plugins/0xFXAmpCollection/build/wyldtone/Amp-Collection.wap
+          unzip -l "$WAP"
+          unzip -Z1 "$WAP" | grep -Fx plugin.wasm
+          unzip -Z1 "$WAP" | grep -Fx licenses/0xFX-MIT.txt
+          unzip -Z1 "$WAP" | grep -Fx licenses/Wyldtone-Apache-2.0.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: amp-collection-wap-integration
+          path: examples/plugins/0xFXAmpCollection/build/wyldtone/Amp-Collection.wap
+          if-no-files-found: error
+          retention-days: 14
