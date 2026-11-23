@@ -1,6 +1,12 @@
 name: Amp Collection - native DSP regression
 
 on:
+  push:
+    branches:
+      - "feat/0xfx-amp-collection"
+    paths:
+      - "plugins/0xFXAmpCollection/**"
+      - ".github/workflows/amp-collection-regression.yml"
   pull_request:
     paths:
       - "plugins/0xFXAmpCollection/**"
