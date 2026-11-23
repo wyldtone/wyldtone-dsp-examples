@@ -52,6 +52,42 @@ int main() {
         std::printf("model %d: sum %.4f\n", model, level);
     }
     assert(baseline > 0.0f);
+
+    // Regression for upstream Sag bug: previously the envelope was compared
+    // to the supply voltage, which could keep Sag permanently inactive.
+    auto steadyLevel = [&](float sag) {
+        plugin_init(48000, channels, frames);
+        plugin_parameter_set(1, 0.85f); // Gain
+        plugin_parameter_set(2, 0.80f); // Volume
+        plugin_parameter_set(7, sag);   // Sag
+        plugin_parameter_set(8, 0.70f); // Master
+        double sum = 0.0;
+        int measured = 0;
+        for (int pass = 0; pass < 120; ++pass) {
+            for (int frame = 0; frame < frames; ++frame) {
+                const float x = 0.35f * std::sin(
+                    2.0f * pi * 110.0f * (frame + pass * frames) / 48000.0f);
+                samples[frame * 2] = x;
+                samples[frame * 2 + 1] = x * 0.75f;
+            }
+            plugin_process(plugin_buffer_ptr(), frames * channels);
+            if (pass >= 100) {
+                for (int i = 0; i < frames * channels; ++i) {
+                    assert(std::isfinite(samples[i]));
+                    sum += std::abs(samples[i]);
+                    ++measured;
+                }
+            }
+        }
+        return sum / measured;
+    };
+    const double noSag = steadyLevel(0.0f);
+    const double fullSag = steadyLevel(1.0f);
+    assert(noSag > 0.00001 && "Fullerton Clean must produce output");
+    std::printf("Sag A/B level: %.7f vs %.7f\n", noSag, fullSag);
+    assert(std::abs(noSag - fullSag) > noSag * 0.001 &&
+           "Sag must measurably change a sustained, non-clipped signal");
+
     std::puts("0xFX Amp Collection: native all-model smoke test passed");
     return 0;
 }
