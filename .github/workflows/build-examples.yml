@@ -8,7 +8,7 @@ permissions:
 
 jobs:
   build-all:
-    name: Build and validate all 20 WAPs
+    name: Build and validate all 21 WAPs
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
@@ -21,7 +21,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: wyldtone/wyldtone-plugin-sdk
-          ref: main
+          ref: feat/wap-license-metadata-notices
           path: sdk
 
       - name: Prepare Docker workspace and external plugin mount
@@ -40,6 +40,9 @@ jobs:
       - name: Check category vocabulary and source layout
         run: python3 examples/scripts/check_examples.py
 
+      - name: Native 0xFX amp smoke test (C99 and C++17)
+        run: sh examples/plugins/0xFXAmpCollection/tests/run-native.sh
+
       - name: Build SDK container image
         working-directory: sdk
         run: docker compose build sdk
@@ -51,7 +54,7 @@ jobs:
             set -euo pipefail
             shopt -s nullglob
             configs=(/workspace/projects/*/plugin.config.json)
-            test "${#configs[@]}" -eq 20
+            test "${#configs[@]}" -eq 21
             for config in "${configs[@]}"; do
               echo "::group::Build ${config}"
               cargo run --release --locked -p wyldtone-cli -- build "${config}"
