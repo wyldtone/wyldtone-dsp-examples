@@ -57,9 +57,10 @@ typedef struct {
 #define AMP_TONE_BANDS 3
 
 typedef struct {
-    float b0,b1,b2,b3;
-    float a1,a2,a3;
-    float z1,z2,z3;
+    // Double precision prevents unstable near-unit-circle poles at high rates.
+    double b0,b1,b2,b3;
+    double a1,a2,a3;
+    double z1,z2,z3;
 } fx_tone_stack_3rd_t;
 
 typedef struct {
