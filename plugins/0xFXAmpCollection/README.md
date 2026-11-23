@@ -1,6 +1,6 @@
-# 0xFX Amp Collection (Wyldtone WAP)
+# Amp Collection (Wyldtone WAP)
 
-A **single** stereo Wyldtone WebAssembly plugin containing the 12 algorithmic
+**Amp Collection** is a single stereo Wyldtone WebAssembly plugin containing the 12 algorithmic
 amp models from [Dan Michael's 0xFX](https://github.com/averagenative/0xFX).
 Select the model through the `Amp Model` **Choice** parameter; there are no
 neural NAM files and no external Cabinet/IR dependencies.
@@ -78,7 +78,7 @@ Then run:
 
 ```bash
 ./wyldtone build projects/0xFXAmpCollection/plugin.config.json
-./wyldtone validate projects/0xFXAmpCollection/build/wyldtone/0xFX-Amp-Collection.wap
+./wyldtone validate projects/0xFXAmpCollection/build/wyldtone/Amp-Collection.wap
 ```
 
 The generated WAP must contain `plugin.wasm`, `manifest.json`,
