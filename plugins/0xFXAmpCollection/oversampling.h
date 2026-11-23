@@ -50,13 +50,55 @@ struct HalfBand2x {
         return sum;
     }
 };
+// 61-tap half-band stage for the second 2x step. Unlike the first 63-tap
+// filter its center (tap 30) lies on the even phase, giving EXACTLY 15 base
+// frames of extra roundtrip delay, for 46 whole frames in 4x mode.
+static constexpr float kOdd61[30] = {
+    0.0000385073974237f, -0.000143086926873f, 0.000371182694112f, -0.000802860607252f,
+    0.00154552055460f, -0.00273763716872f, 0.00455485872472f, -0.00722331422076f,
+    0.0110509162793f, -0.0165023292920f, 0.0243870866399f, -0.0363861545556f,
+    0.0568588697952f, -0.101889901868f, 0.316880515834f, 0.316880515834f,
+    -0.101889901868f, 0.0568588697952f, -0.0363861545556f, 0.0243870866399f,
+    -0.0165023292920f, 0.0110509162793f, -0.00722331422076f, 0.00455485872472f,
+    -0.00273763716872f, 0.00154552055460f, -0.000802860607252f, 0.000371182694112f,
+    -0.000143086926873f, 0.0000385073974237f
+};
+static constexpr float kCenter61 = 0.4999956534400081f;
+
+struct SecondStage2x {
+    float upHistory[32] = {};
+    float downHistory[64] = {};
+    unsigned upIndex = 0, downIndex = 0;
+    inline void up(float in, float& even, float& odd) {
+        upIndex = (upIndex + 1u) & 31u;
+        upHistory[upIndex] = in;
+        even = 2.0f * kCenter61 * upHistory[(upIndex - 15u) & 31u];
+        float sum = 0.0f;
+        for (unsigned i = 0; i < 30; ++i)
+            sum += kOdd61[i] * upHistory[(upIndex - i) & 31u];
+        odd = 2.0f * sum;
+    }
+    inline float down(float even, float odd) {
+        downIndex = (downIndex + 1u) & 63u;
+        downHistory[downIndex] = even;
+        float sum = kCenter61 * downHistory[(downIndex - 30u) & 63u];
+        for (unsigned i = 0; i < 30; ++i)
+            sum += kOdd61[i] * downHistory[(downIndex - (2u*i + 1u)) & 63u];
+        downIndex = (downIndex + 1u) & 63u;
+        downHistory[downIndex] = odd;
+        return sum;
+    }
+};
+
 struct State {
     HalfBand2x first;
-    HalfBand2x second;
+    SecondStage2x second;
 };
-// FIR latency: 31 host samples at 2x, 46.5 host samples at 4x.
-// The current WAP ABI does not report this to the host; beware parallel paths.
-inline float latencySamples(int factor) {
-    return factor == 4 ? 46.5f : factor == 2 ? 31.0f : 0.0f;
+
+// FIR roundtrip latency at the host rate: first-stage = 31 frames;
+// second-stage = 30 high-rate frames / 2 = 15 host frames.
+inline int latencySamples(int factor) {
+    return factor == 4 ? 46 : factor == 2 ? 31 : 0;
 }
+
 } // namespace amp_os
