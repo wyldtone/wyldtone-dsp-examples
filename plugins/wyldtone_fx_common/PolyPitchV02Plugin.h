@@ -55,3 +55,18 @@ extern "C" void wyldfx_process(const float* in,float* out,int32_t frames,int32_t
                       outputGain,dryAligned,clarity);
     }
 }
+
+// In aligned-dry mode, the STFT nominally delays its processed output by
+// half a window. When dry is unaligned, dry+wet have no common latency.
+#ifdef __EMSCRIPTEN__
+#include "wasm_plugin.h"
+#define WYLDFX_POLY_EXPORT WASM_PLUGIN_EXPORT
+#else
+#define WYLDFX_POLY_EXPORT
+#endif
+extern "C" WYLDFX_POLY_EXPORT int32_t plugin_latency_samples() {
+    return wyldfx_parameter(4) >= 0.5f ? (WYLDTONE_POLY_FFT_SIZE / 2) : 0;
+}
+extern "C" WYLDFX_POLY_EXPORT int32_t plugin_max_latency_samples() {
+    return WYLDTONE_POLY_FFT_SIZE / 2;
+}
