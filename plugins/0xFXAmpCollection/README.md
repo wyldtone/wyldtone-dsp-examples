@@ -42,6 +42,16 @@ the original 0xFX `amp.c` declares that parameter but does not implement
 any processing behavior for it. Other model-dependent parameters may also
 be inactive.
 
+The copied upstream `amp.c` includes a documented **MIT-derived Sag
+fix**: supply-voltage droop now follows the target voltage under signal load.
+Upstream compared envelope load to supply voltage, so Sag could remain
+inactive. `tests/native_amp_test.cpp` contains a sustained-signal A/B test.
+
+The SDK's C99 backend must compile the `.c` files with `emcc -std=c99`
+before the C++ link. The first user build succeeded but logged 31
+`-Wreorder-init-list` warnings because the C source was still treated as
+C++; rebuild with the latest SDK PR #13 code.
+
 The core does not implement high-order oversampling. High-gain settings
 may alias; benchmark and listen critically before production release.
 Cabinet IR loading, mic simulation and post-amp effects are intentionally
