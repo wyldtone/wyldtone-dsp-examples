@@ -6,3 +6,9 @@ Apache License, Version 2.0. See LICENSE.
 
 Third-party content and dependencies must retain their own applicable notices.
 The public Wyldtone Plugin SDK is a separate project and retains its own license.
+
+Third-party notice: plugins/0xFXAmpCollection/vendor/0xfx contains MIT-licensed
+code derived from 0xFX by Dan Michael, Copyright (c) 2026 Dan Michael.
+This DSP source is not relicensed as Apache-2.0. See
+plugins/0xFXAmpCollection/licenses/0xFX-MIT.txt for the full MIT license.
+The Wyldtone WAP adapter remains Apache-2.0 under the root license.
