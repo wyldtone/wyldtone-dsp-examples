@@ -211,6 +211,15 @@ void plugin_process(int32_t ptr, int32_t count) {
         inputChannels < 1 || count % inputChannels != 0) return;
     processInterleaved(audio, audio, count / inputChannels, inputChannels);
 }
+// Current and worst-case algorithmic latency in HOST sample frames.
+// The value can change via the Oversampling Choice; the host reserves the
+// worst-case 46 samples during graph prepare.
+WASM_PLUGIN_EXPORT int32_t plugin_latency_samples() {
+    return amp_os::latencySamples(selectedFactor());
+}
+WASM_PLUGIN_EXPORT int32_t plugin_max_latency_samples() {
+    return amp_os::latencySamples(4);
+}
 WASM_PLUGIN_EXPORT int32_t plugin_input_bus_count() { return 1; }
 WASM_PLUGIN_EXPORT int32_t plugin_output_bus_count() { return 1; }
 WASM_PLUGIN_EXPORT int32_t plugin_input_bus_channels(int32_t bus) { return bus == 0 ? 2 : 0; }
@@ -260,7 +269,8 @@ void plugin_parameter_set(int32_t index, float normalized) {
         : index == kOversamplingIndex ? std::round(safe * 2.0f) / 2.0f : safe;
     if (value != values[index]) {
         values[index] = value;
-        pending.fetch_or(1, std::memory_order_release);
+        pending.fetch_or(index == kOversamplingIndex ? (1 | 8) : 1,
+                         std::memory_order_release);
     }
 }
 int32_t plugin_pending_events() {
