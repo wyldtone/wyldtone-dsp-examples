@@ -2,7 +2,7 @@
   "id": "com.wyldtone.fx.polyphonic-octaver",
   "name": "Polyphonic Octaver",
   "manufacturer": "Wyldtone",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "cpp": {
     "sources": [
       "plugin.cpp",
